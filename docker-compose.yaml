@@ -84,6 +84,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules:/etc/prometheus/alert.rules
       - ./prometheus/prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -100,14 +101,42 @@ services:
       - proxy-forum-api
     user: root
 
-#  client-forum-api:
-#    build:
-#      context: ./client/
-#      dockerfile: Dockerfile
-#    image: client-forum-api
-#    container_name: client-forum-api
-#    restart: unless-stopped
-#    networks:
-#      - proxy
-#    depends_on:
-#      - proxy-forum-api
+  grafana-forum-api:
+    image: grafana/grafana
+    container_name: granfa-forum-api
+    volumes:
+      - ./grafana:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - monit
+    depends_on:
+      - alertmanager-forum-api
+
+  client-forum-api:
+    build:
+      context: ./client/
+      dockerfile: Dockerfile
+    image: client-forum-api
+    container_name: client-forum-api
+    restart: unless-stopped
+    networks:
+      - proxy
+    depends_on:
+      - proxy-forum-api
+
+  alertmanager-forum-api:
+    image: prom/alertmanager
+    container_name: alertmanager-forum-api
+    volumes:
+      - ./alertmanager:/etc/alertmanager/:ro
+    ports:
+      - 9093:9093
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+    networks:
+      - monit
+    depends_on:
+      - prometheus-forum-api
+    user: root

@@ -1,0 +1,17 @@
+{
+	"ulid": "01J18X0JA1TXG35EP04SJ711WR",
+	"minTime": 1719266426587,
+	"maxTime": 1719273600000,
+	"stats": {
+		"numSamples": 293271,
+		"numSeries": 1206,
+		"numChunks": 2819
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01J18X0JA1TXG35EP04SJ711WR"
+		]
+	},
+	"version": 1
+}
